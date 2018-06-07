@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">UdacityMovieProject</string>
+    <string name="api_domain_popular">http://api.themoviedb.org/3/movie/popular</string>
+    <string name="api_domain_top_rated">http://api.themoviedb.org/3/movie/top_rated</string>
+    <string name="api_domain_images">http://image.tmdb.org/t/p/w185/</string>
+    <string name="api_key_query">api_key</string>
+    <string name="api_pagination_query">page</string>
+
+    <!--
+    JSON tags string
+    -->
+    <string name="json_total_pages">total_pages</string>
+    <string name="json_movies_result">results</string>
+    <string name="json_movie_id">id</string>
+    <string name="json_movie_title">title</string>
+    <string name="json_movie_poster_path">poster_path</string>
+    <string name="json_movie_sinopse">overview</string>
+    <string name="json_movie_original_title">original_title</string>
+    <string name="json_movie_release_date">release_date</string>
+    <string name="json_movie_user_rating">vote_average</string>
+
+
+    <!--
+    Strings for detail layout
+    -->
+    <string name="detail_user_rating">User Rating: </string>
+
+    <!--
+    Strings for menu layout
+    -->
+    <string name="menu_sort_top_rated">Top Rated</string>
+    <string name="menu_sort_popular">Most Popular</string>
 </resources>
