@@ -2,6 +2,8 @@ package com.example.android.udacitymovieproject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements PostersRecyclerVi
     ProgressBar moviesProgressBar;
     private List<Movie> movies;
     private RequestQueue requestQueue;
+    TextView noNetworkTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +52,21 @@ public class MainActivity extends AppCompatActivity implements PostersRecyclerVi
         // data to populate the RecyclerView with
         moviesProgressBar = (ProgressBar) findViewById(R.id.pb_posters_progress_bar);
         recyclerView = (RecyclerView) findViewById(R.id.mv_poster_view);
+        noNetworkTextView = (TextView) findViewById(R.id.no_network_text_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         movies = new ArrayList<>();
+        if(isOnline()) {
 
-        requestQueue = Volley.newRequestQueue(this);
-        try {
-            parseJsonMovies();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            requestQueue = Volley.newRequestQueue(this);
+            try {
+                parseJsonMovies();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            recyclerView.setVisibility(View.INVISIBLE);
+            moviesProgressBar.setVisibility(View.INVISIBLE);
+            noNetworkTextView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -68,18 +79,23 @@ public class MainActivity extends AppCompatActivity implements PostersRecyclerVi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemSelected = item.getItemId();
-        if(itemSelected == R.id.menu_sort_popular){
-            listingEnum = ListingEnum.POPULAR;
-        } else if(itemSelected == R.id.menu_sort_top_rated){
-            listingEnum = ListingEnum.TOP_RATED;
-        }
-        try {
-            moviesProgressBar.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.INVISIBLE);
-            movies = new ArrayList<>();
-            refreshMovies();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        if(isOnline()) {
+            if (itemSelected == R.id.menu_sort_popular) {
+                listingEnum = ListingEnum.POPULAR;
+            } else if (itemSelected == R.id.menu_sort_top_rated) {
+                listingEnum = ListingEnum.TOP_RATED;
+            }
+            try {
+                moviesProgressBar.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.INVISIBLE);
+                movies = new ArrayList<>();
+                refreshMovies();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, getString(R.string.no_network_connection), Toast.LENGTH_LONG)
+                .show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -168,5 +184,11 @@ public class MainActivity extends AppCompatActivity implements PostersRecyclerVi
         startActivity(initDetailActivity);
 //        Toast.makeText(view.getContext(), "Testando", Toast.LENGTH_LONG)
 //                .show();
+    }
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 }
